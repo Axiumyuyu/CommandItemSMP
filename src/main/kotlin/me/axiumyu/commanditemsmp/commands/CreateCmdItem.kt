@@ -19,6 +19,7 @@ import me.axiumyu.commanditemsmp.config.Config.cmdItems
 import me.axiumyu.commanditemsmp.config.Config.config
 import org.bukkit.Material
 import org.bukkit.NamespacedKey.minecraft
+import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -68,33 +69,23 @@ object CreateCmdItem : CommandExecutor {
     fun createFromConfig(section: ConfigurationSection): CmdItem {
         val material = Material.valueOf(section.getString("material") ?: "STONE")
         val item = ItemStack(material)
-        val attMod = section.getConfigurationSection("attribute-modifiers")
-        val attList: MutableList<AttributeModifier> = mutableListOf()
-        attMod?.getKeys(false)?.forEach {
 
-            val att = attMod.getConfigurationSection(it)!!
-            val id = att.getString("id") ?: return@forEach
-            val amount = att.getDouble("amount", 0.0)
-            val operation = AttributeModifier.Operation.valueOf(att.getString("operation") ?: return@forEach)
-            val slot = EquipmentSlotGroup.getByName(att.getString("slot") ?: "HAND")
-            val to = getRegistry(ATTRIBUTE, minecraft(att.getString("to") ?: "ATTACK_DAMAGE")) ?: return@forEach
-
-            if (amount != 0.0 && slot != null) {
-                attList.add(AttributeModifier(nameSpace(id), amount, operation, slot))
-                item.addAttributeModifier(to, attList.last())
+        section.getConfigurationSection("attributes")?.let {
+            val atts = getAttModFromConfig(section.getConfigurationSection("attributes")!!)
+            atts.forEach { att ->
+                att.value.forEach {
+                    item.addAttributeModifier(att.key, it)
+                }
             }
         }
-        val enchsec = section.getConfigurationSection("enchantments")
-        val enchs = mutableMapOf<Enchantment, Int>()
 
-        enchsec?.getKeys(false)?.forEach {
-            val registry = getRegistry(ENCHANTMENT, nameSpace(it)) ?: return@forEach
-            val level = enchsec.getInt(it, 1)
-            enchs[registry] = level
+        section.getConfigurationSection("enchantments")?.let{
+            val enchs = parseEnchantments(it)
+            item.addEnchantments(enchs)
         }
-        item.addEnchantments(enchs)
+
         item.lore(section.getStringList("lore").map { mm.deserializeOrNull(it.replaceColor()) })
-        item.editPersistentDataContainer a@{
+        item.editPersistentDataContainer {
             it.set(TAG, PersistentDataType.STRING, KEY)
             it.set(CMD, PersistentDataType.LIST.strings(), section.getStringList("command"))
             it.set(ID, PersistentDataType.STRING, section.name)
@@ -105,5 +96,37 @@ object CreateCmdItem : CommandExecutor {
         return CmdItem(item)
     }
 
+    private fun getAttModFromConfig(section: ConfigurationSection): Map<Attribute, List<AttributeModifier>> {
+        val attList: MutableMap<Attribute, MutableList<AttributeModifier>> = mutableMapOf()
+        section.getKeys(false).forEach {
+            val to = getRegistry(ATTRIBUTE, minecraft(section.getString("$it.to") ?: "ATTACK_DAMAGE")) ?: return@forEach
+            val att = parseAttributeModifier(section.getConfigurationSection(it)!!) ?: return@forEach
+            if (attList.contains(to)) {
+                attList[to]!!.add(att)
+            }else{
+                attList[to] = mutableListOf(att)
+            }
+        }
+        return attList
+
+    }
+
+    private fun parseAttributeModifier(section: ConfigurationSection): AttributeModifier? {
+        val id = section.name
+        val amount = section.getDouble("amount", 0.0)
+        val operation = AttributeModifier.Operation.valueOf(section.getString("operation") ?: return null)
+        val slot = EquipmentSlotGroup.getByName(section.getString("slot") ?: "HAND") ?: return null
+        return AttributeModifier(nameSpace(id), amount, operation, slot)
+    }
+
+    private fun parseEnchantments(section: ConfigurationSection): Map<Enchantment, Int> {
+        val enchs = mutableMapOf<Enchantment, Int>()
+        section.getKeys(false).forEach {
+            val registry = getRegistry(ENCHANTMENT, nameSpace(it)) ?: return@forEach
+            val level = section.getInt(it, 1)
+            enchs[registry] = level
+        }
+        return enchs
+    }
 
 }

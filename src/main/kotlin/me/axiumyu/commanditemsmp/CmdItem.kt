@@ -31,10 +31,10 @@ data class CmdItem(
 
     val pdc = item.persistentDataContainer
     val id = pdc.get(ID, STRING)
-    val needPerm = pdc.get(NEED_PERM, STRING) == "true"
+    val needPerm = (pdc.get(NEED_PERM, STRING) ?: false) as Boolean
     val cooldown = pdc.get(CD, STRING)?.toIntOrNull() ?: 0
     val command = pdc.get(CMD, LIST.strings()) ?: listOf()
-    val consume = pdc.get(CONSUME, STRING) == "true"
+    val consume = (pdc.get(CONSUME, STRING) ?: false) as Boolean
 
     fun canUse(pl: Player): Boolean {
         if (needPerm && !pl.hasPermission("commanditemsmp.use.$id")) {
