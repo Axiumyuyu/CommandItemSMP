@@ -6,6 +6,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Keyed
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
+import kotlin.jvm.Throws
 
 object Util {
 
@@ -69,6 +70,7 @@ object Util {
     }
 
     @JvmStatic
+    @Throws(IndexOutOfBoundsException::class)
     fun nameSpace(name : String): NamespacedKey{
         val ns = name.split(":")
         return NamespacedKey(ns[0], ns[1])

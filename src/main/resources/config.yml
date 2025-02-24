@@ -27,5 +27,5 @@ items:
       command:
         - "say Hello World"
         - "give %player% minecraft:stone 1"
-      need-perm: false
-      cooldown: 0
+      need-perm: false      #default: false
+      cooldown: 0           #default: 0

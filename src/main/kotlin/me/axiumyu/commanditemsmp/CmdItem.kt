@@ -7,7 +7,6 @@ import me.axiumyu.commanditemsmp.Util.ID
 import me.axiumyu.commanditemsmp.Util.NEED_PERM
 import me.axiumyu.commanditemsmp.Util.replacePapi
 import me.axiumyu.commanditemsmp.config.Config
-import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -30,7 +29,6 @@ data class CmdItem(
     }
     val lastUse = mutableMapOf<Player, Long>()
 
-
     val pdc = item.persistentDataContainer
     val id = pdc.get(ID, STRING)
     val needPerm = pdc.get(NEED_PERM, STRING) == "true"
@@ -44,7 +42,7 @@ data class CmdItem(
             return false
         }
         if (cooldown > 0) {
-            if (lastUse[pl] != null && System.currentTimeMillis() - lastUse[pl]!! < cooldown * 1000) {
+            if (lastUse.contains(pl) && System.currentTimeMillis() - lastUse[pl]!! < cooldown * 1000) {
                 pl.sendInfo("你需要等待${(cooldown - (System.currentTimeMillis() - lastUse[pl]!!) / 1000).toInt()}秒才能再次使用这个物品。")
                 return false
             }

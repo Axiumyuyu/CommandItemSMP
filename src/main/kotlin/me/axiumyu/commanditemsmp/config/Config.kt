@@ -3,7 +3,7 @@ package me.axiumyu.commanditemsmp.config
 import me.axiumyu.commanditemsmp.CmdItem
 import me.axiumyu.commanditemsmp.CommandItemSMP
 import me.axiumyu.commanditemsmp.commands.CreateCmdItem.createFromConfig
-import org.apache.commons.lang3.mutable.Mutable
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit.getServer
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin.getPlugin
@@ -27,9 +27,19 @@ object Config {
             allCmdItem.getKeys(false).forEach {
                 cmdItems.add(createFromConfig(config.getConfigurationSection("items.$it")!!))
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
+            when (e::class){
+                IllegalArgumentException::class -> {
+                    getServer().sendMessage(text("config.yml 存在问题,重新加载失败"))
+                }
+                IndexOutOfBoundsException::class -> {
+                    getServer().sendMessage(text("命名空间存在问题,重新加载失败"))
+                }
+                else -> {
+                    getServer().sendMessage(text("未知错误,重新加载失败"))
+                }
+            }
             cmdItems.addAll(backup)
-            getServer().sendMessage("config.yml 存在问题,重新加载失败")
         }
     }
 
