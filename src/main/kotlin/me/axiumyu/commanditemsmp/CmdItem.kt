@@ -30,7 +30,7 @@ data class CmdItem(
     val lastUse = mutableMapOf<Player, Long>()
 
     val pdc = item.persistentDataContainer
-    val id = pdc.get(ID, STRING)
+    val id = pdc.get(ID, STRING) ?: throw UnsupportedOperationException("物品不属于命令物品")
     val needPerm = (pdc.get(NEED_PERM, STRING) ?: false) as Boolean
     val cooldown = pdc.get(CD, STRING)?.toIntOrNull() ?: 0
     val command = pdc.get(CMD, LIST.strings()) ?: listOf()

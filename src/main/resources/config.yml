@@ -4,7 +4,7 @@ use-message: true
 items:
   - test-item:
       name: "Test Item"
-      material: STONE
+      material: STONE   #https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
       lore:
         - "This is a test item"
         - "Click me!"
@@ -12,12 +12,12 @@ items:
         - minecraft:sharpness: 1
         - minecraft:unbreaking: 1
       attribute-modifiers:
-        - "axiumyu:test":
+        - axiumyu:test:
             amount: 1.0
             operation: "ADD_SCALAR"     #ADD_NUMBER, ADD_SCALAR, MULTIPLY_SCALAR_1;
             slot: "HAND"             #  ANY;MAINHAND;OFFHAND;HAND;FEET;LEGS;CHEST;HEAD;ARMOR;BODY;
             to: "MAX_HEALTH"        # https://purpurmc.org/javadoc/org/bukkit/attribute/Attribute.html
-        - "axiumyu:test2":
+        - axiumyu:test2:
             amount: 1.3
             operation: "ADD_NUMBER"
             slot: "FEET"
@@ -27,3 +27,7 @@ items:
         - "give %player% minecraft:stone 1"
       need-perm: false      #default: false
       cooldown: 0           #default: 0
+      rarity: COMMON      #default: COMMON
+      max-stack: 1           #default: 1
+      glint: false         #default: false
+      unbreakable: false     #default: false

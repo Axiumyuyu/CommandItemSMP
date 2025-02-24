@@ -6,12 +6,11 @@ import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Keyed
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
-import kotlin.jvm.Throws
 
 object Util {
 
     @JvmStatic
-    fun axiumyuKey(name : String) = NamespacedKey("axiumyu", name)
+    fun axiumyuKey(name: String) = NamespacedKey("axiumyu", name)
 
     @JvmField
     val TAG = axiumyuKey("tag")
@@ -26,13 +25,22 @@ object Util {
     val NEED_PERM = axiumyuKey("need_perm")
 
     @JvmField
-    val CD = axiumyuKey("cd")
+    val CD = axiumyuKey("cooldown")
 
     @JvmField
     val CONSUME = axiumyuKey("consume")
 
     @JvmField
-    val castMap : HashMap<Char, String> =hashMapOf(
+    val propertyMap: Map<NamespacedKey, String> = mapOf(
+        ID to "id",
+        CMD to "command",
+        CD to "cooldown",
+        NEED_PERM to "need_perm",
+        CONSUME to "consume"
+    )
+
+    @JvmField
+    val castMap: Map<Char, String> = mapOf(
         'f' to "<white>",
         'e' to "<yellow>",
         'd' to "<light_purple>",
@@ -65,17 +73,18 @@ object Util {
     }
 
     @JvmStatic
-    fun String.replacePapi(pl : Player): String {
+    fun String.replacePapi(pl: Player): String {
         return PlaceholderAPI.setPlaceholders(pl, this)
     }
 
     @JvmStatic
     @Throws(IndexOutOfBoundsException::class)
-    fun nameSpace(name : String): NamespacedKey{
+    fun nameSpace(name: String): NamespacedKey {
         val ns = name.split(":")
-        return NamespacedKey(ns[0], ns[1])
+        return NamespacedKey(ns[0], ns[1]) //throw IndexOutOfBoundsException if name is not in the format of "namespace:key"
     }
 
     @JvmStatic
-    fun <T : Keyed> getRegistry(category: RegistryKey<T>, namespacedKey: NamespacedKey) = registryAccess().getRegistry(category).get(namespacedKey)
+    fun <T : Keyed> getRegistry(category: RegistryKey<T>, namespacedKey: NamespacedKey) =
+        registryAccess().getRegistry(category).get(namespacedKey)
 }

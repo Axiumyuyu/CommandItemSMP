@@ -5,6 +5,7 @@ import io.papermc.paper.registry.RegistryKey.ENCHANTMENT
 import me.axiumyu.commanditemsmp.CmdItem
 import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.KEY
 import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.mm
+import me.axiumyu.commanditemsmp.Serialize.serialize
 import me.axiumyu.commanditemsmp.Util.CD
 import me.axiumyu.commanditemsmp.Util.CMD
 import me.axiumyu.commanditemsmp.Util.CONSUME
@@ -13,10 +14,12 @@ import me.axiumyu.commanditemsmp.Util.NEED_PERM
 import me.axiumyu.commanditemsmp.Util.TAG
 import me.axiumyu.commanditemsmp.Util.getRegistry
 import me.axiumyu.commanditemsmp.Util.nameSpace
+import me.axiumyu.commanditemsmp.Util.propertyMap
 import me.axiumyu.commanditemsmp.Util.replaceColor
 import me.axiumyu.commanditemsmp.config.Config
 import me.axiumyu.commanditemsmp.config.Config.cmdItems
 import me.axiumyu.commanditemsmp.config.Config.config
+import org.bukkit.Bukkit.getServer
 import org.bukkit.Material
 import org.bukkit.NamespacedKey.minecraft
 import org.bukkit.attribute.Attribute
@@ -28,9 +31,11 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
-import java.lang.IndexOutOfBoundsException
 
 
 object CreateCmdItem : CommandExecutor {
@@ -58,7 +63,7 @@ object CreateCmdItem : CommandExecutor {
         } else {
             p3[0]
         }
-        config["items.${key}"] = item
+        serialize(item, key)
         p0.sendMessage("成功创建物品,id为 $key ! 请自行添加命令")
         Config.save()
         Config.reload()
@@ -67,7 +72,7 @@ object CreateCmdItem : CommandExecutor {
 
     @Throws(IndexOutOfBoundsException::class, IllegalArgumentException::class)
     fun createFromConfig(section: ConfigurationSection): CmdItem {
-        val material = Material.valueOf(section.getString("material") ?: "STONE")
+        val material = Material.valueOf(section.getString("material") ?: "STONE") //throw IllegalArgumentException
         val item = ItemStack(material)
 
         section.getConfigurationSection("attributes")?.let {
@@ -79,20 +84,27 @@ object CreateCmdItem : CommandExecutor {
             }
         }
 
-        section.getConfigurationSection("enchantments")?.let{
+        section.getConfigurationSection("enchantments")?.let {
             val enchs = parseEnchantments(it)
             item.addEnchantments(enchs)
+        }
+        item.editMeta {
+            it.setRarity(ItemRarity.valueOf(section.getString("rarity") ?: "COMMON")) //throw IllegalArgumentException
+            it.setMaxStackSize(section.getInt("max-stack", 1))
+            it.setEnchantmentGlintOverride(section.getBoolean("glint", false))
+            it.isUnbreakable = section.getBoolean("unbreakable", false)
         }
 
         item.lore(section.getStringList("lore").map { mm.deserializeOrNull(it.replaceColor()) })
         item.editPersistentDataContainer {
             it.set(TAG, PersistentDataType.STRING, KEY)
-            it.set(CMD, PersistentDataType.LIST.strings(), section.getStringList("command"))
+            it.set(CMD, PersistentDataType.LIST.strings(), section.getStringList(propertyMap[CMD]!!))
             it.set(ID, PersistentDataType.STRING, section.name)
-            it.set(CONSUME, PersistentDataType.BOOLEAN, section.getBoolean("consume", true))
-            it.set(CD, PersistentDataType.INTEGER, section.getInt("cooldown", 0))
-            it.set(NEED_PERM, PersistentDataType.BOOLEAN, section.getBoolean("need-permission", false))
+            it.set(CONSUME, PersistentDataType.BOOLEAN, section.getBoolean(propertyMap[CONSUME]!!, true))
+            it.set(CD, PersistentDataType.INTEGER, section.getInt(propertyMap[CD]!!, 0))
+            it.set(NEED_PERM, PersistentDataType.BOOLEAN, section.getBoolean(propertyMap[NEED_PERM]!!, false))
         }
+        getServer().pluginManager.addPermission(Permission("commanditemsmp.use.${section.name}", PermissionDefault.OP))
         return CmdItem(item)
     }
 
@@ -103,7 +115,7 @@ object CreateCmdItem : CommandExecutor {
             val att = parseAttributeModifier(section.getConfigurationSection(it)!!) ?: return@forEach
             if (attList.contains(to)) {
                 attList[to]!!.add(att)
-            }else{
+            } else {
                 attList[to] = mutableListOf(att)
             }
         }

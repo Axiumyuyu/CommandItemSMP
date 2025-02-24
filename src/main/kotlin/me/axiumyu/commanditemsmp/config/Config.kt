@@ -30,7 +30,7 @@ object Config {
         } catch (e: Exception) {
             when (e::class){
                 IllegalArgumentException::class -> {
-                    getServer().sendMessage(text("config.yml 存在问题,重新加载失败"))
+                    getServer().sendMessage(text("物品材料存在问题,重新加载失败"))
                 }
                 IndexOutOfBoundsException::class -> {
                     getServer().sendMessage(text("命名空间存在问题,重新加载失败"))
