@@ -1,0 +1,4 @@
+name: CommandItemSMP
+version: '1.0.0'
+main: me.axiumyu.heartk.commanditemsmp.CommandItemSMP
+api-version: '1.21'
