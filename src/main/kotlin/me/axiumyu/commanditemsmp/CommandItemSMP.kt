@@ -1,8 +1,9 @@
 package me.axiumyu.commanditemsmp
 
-import me.axiumyu.commanditemsmp.Util.axiumyuKey
 import me.axiumyu.commanditemsmp.commands.CreateCmdItem
+import me.axiumyu.commanditemsmp.commands.GetCmdItem
 import me.axiumyu.commanditemsmp.config.Config
+import me.axiumyu.commanditemsmp.listener.UseCmdItem
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -17,11 +18,8 @@ class CommandItemSMP : JavaPlugin() {
         Config.config = this.config
         saveDefaultConfig()
         mm = MiniMessage.miniMessage()
-        getCommand("commanditem")?.setExecutor(CreateCmdItem)
-
-    }
-
-    override fun onDisable() {
-        // Plugin shutdown logic
+        getCommand("getitem")?.setExecutor(GetCmdItem)
+        getCommand("createitem")?.setExecutor(CreateCmdItem)
+        server.pluginManager.registerEvents(UseCmdItem, this)
     }
 }

@@ -25,13 +25,14 @@ object UseCmdItem : Listener {
         val pdc = item.persistentDataContainer
         if (!pdc.has(TAG, STRING) || pdc.get(TAG, STRING) != KEY) return
         if (!pdc.has(ID, STRING)) return
-        val cmdItem = getCmdItem(pdc.get(ID, STRING)!!)
-        if (cmdItem== null) return
+        val cmdItem = getCmdItem(pdc.get(ID, STRING)!!) ?: return
         if (!Config.strict){
             cmdItem.needPerm = pdc.get(NEED_PERM, PersistentDataType.BOOLEAN) == true
             cmdItem.command = pdc.get(CMD, PersistentDataType.LIST.strings())?: listOf<String>()
             cmdItem.cooldown = pdc.get(CD, PersistentDataType.INTEGER)?: 0
             cmdItem.consume = pdc.get(CONSUME, PersistentDataType.BOOLEAN) == true
         }
+       val pl = event.player
+       if (cmdItem.canUse(pl)) cmdItem.useItem(pl)
     }
 }

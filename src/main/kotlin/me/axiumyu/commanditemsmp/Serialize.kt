@@ -1,5 +1,6 @@
 package me.axiumyu.commanditemsmp
 
+import com.google.common.collect.Multimap
 import me.axiumyu.commanditemsmp.Util.ID
 import me.axiumyu.commanditemsmp.Util.propertyMap
 import me.axiumyu.commanditemsmp.config.Config.config
@@ -22,18 +23,22 @@ object Serialize {
     }
 
     @JvmStatic
+    private val Any.out : String
+        get() = this.toString().uppercase()
+
+
+    @JvmStatic
     fun serialize(item: ItemStack, id: String? = null) {
         if (id == null && item.itemMeta?.persistentDataContainer?.has(ID, STRING) != true) {
             throw IllegalArgumentException("无法序列化物品，请指定物品ID。")
         }
         val id = id ?: item.itemMeta?.persistentDataContainer?.get(ID, STRING)
         val path = "items.$id"
-        config.set("items.$id.material", item.type.name)
+        path.set("material", item.type.name.out)
 
-        val itemMeta = item.itemMeta
-        if (itemMeta == null) return
+        val itemMeta = item.itemMeta ?: return
         path.set("max-stack", itemMeta.maxStackSize)
-        path.set("rarity", itemMeta.rarity.name)
+        path.set("rarity", itemMeta.rarity.name.out)
         path.set("name", item.displayName())
         path.set("unbreakable", itemMeta.isUnbreakable)
         path.set("glint", itemMeta.enchantmentGlintOverride)
@@ -45,15 +50,15 @@ object Serialize {
         item.enchantments.forEach {
             path.set("enchantments.${it.key.key}", it.value)
         }
-        val attMod: Map<Attribute?, Collection<AttributeModifier?>?>? = item.attributeModifiers?.asMap()
-        attMod?.forEach { (att, value) ->
-            value?.forEach {
+        val attMod: Multimap<Attribute, AttributeModifier>? = item.attributeModifiers
+        attMod?.keys()?.forEach { att ->
+            attMod.get(att).forEach {
                 if (att?.key == null) return@forEach
                 if (it?.key == null) return@forEach
-                path.set("attribute-modifiers.${it.key}.to", att)
                 path.set("attribute-modifiers.${it.key}.amount", it.amount)
-                path.set("attribute-modifiers.${it.key}.operation", it.operation.name)
-                path.set("attribute-modifiers.${it.key}.slot", it.slotGroup)
+                path.set("attribute-modifiers.${it.key}.operation", it.operation.name.out)
+                path.set("attribute-modifiers.${it.key}.slot", it.slotGroup.out)
+                path.set("attribute-modifiers.${it.key}.to", att.out)
             }
         }
         val pdc = itemMeta.persistentDataContainer

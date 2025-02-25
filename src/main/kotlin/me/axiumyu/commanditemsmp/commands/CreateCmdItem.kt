@@ -1,5 +1,7 @@
 package me.axiumyu.commanditemsmp.commands
 
+import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import io.papermc.paper.registry.RegistryKey.ATTRIBUTE
 import io.papermc.paper.registry.RegistryKey.ENCHANTMENT
 import me.axiumyu.commanditemsmp.CmdItem
@@ -67,7 +69,11 @@ object CreateCmdItem : CommandExecutor {
             p0.sendMessage("id已经存在")
             return false
         }
-        serialize(item, key)
+        try {
+            serialize(item, key)
+        } catch (e: IllegalArgumentException) {
+            p0.sendMessage(e.message?:"序列化时发生错误")
+        }
         p0.sendMessage("成功创建物品,id为 $key ! 请自行添加命令")
         Config.save()
         Config.reload()
@@ -81,9 +87,9 @@ object CreateCmdItem : CommandExecutor {
 
         section.getConfigurationSection("attributes")?.let {
             val atts = getAttModFromConfig(section.getConfigurationSection("attributes")!!)
-            atts.forEach { att ->
-                att.value.forEach {
-                    item.addAttributeModifier(att.key, it)
+            atts.keys().forEach {
+                atts.get(it).forEach { mod ->
+                    item.addAttributeModifier(it, mod)
                 }
             }
         }
@@ -117,16 +123,12 @@ object CreateCmdItem : CommandExecutor {
         return CmdItem(id, item, needPerm,cd,cmd, consume)
     }
 
-    private fun getAttModFromConfig(section: ConfigurationSection): Map<Attribute, List<AttributeModifier>> {
-        val attList: MutableMap<Attribute, MutableList<AttributeModifier>> = mutableMapOf()
+    private fun getAttModFromConfig(section: ConfigurationSection): Multimap<Attribute, AttributeModifier> {
+        val attList: Multimap<Attribute, AttributeModifier> = ArrayListMultimap.create<Attribute, AttributeModifier>()
         section.getKeys(false).forEach {
             val to = getRegistry(ATTRIBUTE, minecraft(section.getString("$it.to") ?: "ATTACK_DAMAGE")) ?: return@forEach
             val att = parseAttributeModifier(section.getConfigurationSection(it)!!) ?: return@forEach
-            if (attList.contains(to)) {
-                attList[to]!!.add(att)
-            } else {
-                attList[to] = mutableListOf(att)
-            }
+            attList.put(to, att)
         }
         return attList
 

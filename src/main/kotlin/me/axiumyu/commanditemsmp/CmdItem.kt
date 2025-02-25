@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin.getPlugin
+import java.util.UUID
 
 data class CmdItem(
     val id : String,
@@ -16,7 +17,7 @@ data class CmdItem(
     var consume : Boolean
 ) {
 
-    
+
     companion object {
         @JvmStatic
         fun Player.sendInfo(msg: String) {
@@ -28,7 +29,7 @@ data class CmdItem(
         }
     }
 
-    val lastUse = mutableMapOf<Player, Long>()
+    val lastUse = mutableMapOf<UUID, Long>()
 
     fun canUse(pl: Player): Boolean {
         if (needPerm && !pl.hasPermission("commanditemsmp.use.$id")) {
@@ -36,8 +37,8 @@ data class CmdItem(
             return false
         }
         if (cooldown > 0) {
-            if (lastUse.contains(pl) && System.currentTimeMillis() - lastUse[pl]!! < cooldown * 1000) {
-                pl.sendInfo("你需要等待${(cooldown - (System.currentTimeMillis() - lastUse[pl]!!) / 1000).toInt()}秒才能再次使用这个物品。")
+            if (lastUse.contains(pl.uniqueId) && System.currentTimeMillis() - lastUse[pl.uniqueId]!! < cooldown * 1000) {
+                pl.sendInfo("你需要等待${(cooldown - (System.currentTimeMillis() - lastUse[pl.uniqueId]!!) / 1000).toInt()}秒才能再次使用这个物品。")
                 return false
             }
         }
@@ -46,7 +47,7 @@ data class CmdItem(
 
     fun useItem(pl: Player) {
         if (!canUse(pl)) return
-        lastUse[pl] = System.currentTimeMillis()
+        lastUse[pl.uniqueId] = System.currentTimeMillis()
         val server = getPlugin(CommandItemSMP::class.java).server
         command.forEach {
             server.dispatchCommand(server.consoleSender, it.replacePapi(pl))

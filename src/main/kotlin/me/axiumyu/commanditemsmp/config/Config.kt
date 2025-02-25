@@ -35,16 +35,6 @@ object Config {
     }
 
     @JvmStatic
-    fun addCmdItem(item: CmdItem) {
-        cmdItems.add(item)
-    }
-
-    @JvmStatic
-    fun removeCmdItem(item: CmdItem) {
-        cmdItems.remove(item)
-    }
-
-    @JvmStatic
     fun getSize() = cmdItems.size
 
     @JvmStatic

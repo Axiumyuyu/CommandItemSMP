@@ -7,7 +7,6 @@ group = "me.axiumyu.commanditemsmp"
 version = "1.0.0"
 
 repositories {
-    mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/") {
         name = "papermc-repo"
     }
@@ -18,12 +17,15 @@ repositories {
         name = "PlaceHolderAPI"
     }
     maven("https://repo.purpurmc.org/snapshots")
+    mavenCentral()
+
 }
 
 dependencies {
     implementation("org.purpurmc.purpur:purpur-api:1.21.4-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("me.clip:placeholderapi:2.11.6")
+    implementation("com.google.guava:guava:33.4.0-jre")
 }
 
 val targetJavaVersion = 21

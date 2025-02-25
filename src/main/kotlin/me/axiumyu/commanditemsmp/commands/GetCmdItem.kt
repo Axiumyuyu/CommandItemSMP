@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-object GetItem : CommandExecutor {
+object GetCmdItem : CommandExecutor {
     override fun onCommand(
         p0: CommandSender,
         p1: Command,
@@ -31,7 +31,10 @@ object GetItem : CommandExecutor {
         if (i != -1) {
             p0.inventory.setItem(i, item.item)
         } else {
-            p0.world.dropItem(p0.location, item.item)
+            p0.world.dropItem(p0.location, item.item){
+                it.isGlowing = true
+            }
         }
+        return true
     }
 }
