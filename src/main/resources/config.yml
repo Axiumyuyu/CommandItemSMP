@@ -1,6 +1,13 @@
 #true: 使用Player.sendMessage()发送消息,false: 使用Player.sendActionBar()发送消息
 use-message: true
 
+#true: 玩家背包满时掉落物品,false: 玩家背包满时不掉落物品
+drop: true
+
+#严格模式,true时仅匹配物品id,命令,冷却,权限等全部从配置文件读取,false时从物品本身读取(物品可能会被篡改)
+#当某项不存在时使用默认值(见示例物品)
+strict: true
+
 items:
   - test-item:
       name: "Test Item"

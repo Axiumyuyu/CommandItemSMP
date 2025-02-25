@@ -9,12 +9,43 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin.getPlugin
 
 object Config {
-    lateinit var config : FileConfiguration
-
-    var useMessage : Boolean = config.getBoolean("useMessage", true)
+    lateinit var config: FileConfiguration
 
     @JvmField
-    val cmdItems : MutableList<CmdItem> = mutableListOf()
+    var useMessage: Boolean = config.getBoolean("useMessage", true)
+
+    @JvmField
+    var drop: Boolean = config.getBoolean("drop", true)
+
+    @JvmField
+    val strict: Boolean = config.getBoolean("strict", true)
+
+    private val cmdItems: MutableList<CmdItem> = mutableListOf()
+
+    @JvmStatic
+    fun getCmdItem(id: String): CmdItem? {
+        var item: CmdItem? = null
+        cmdItems.forEach {
+            if (it.id == id) {
+                item = it
+            }
+            null
+        }
+        return item
+    }
+
+    @JvmStatic
+    fun addCmdItem(item: CmdItem) {
+        cmdItems.add(item)
+    }
+
+    @JvmStatic
+    fun removeCmdItem(item: CmdItem) {
+        cmdItems.remove(item)
+    }
+
+    @JvmStatic
+    fun getSize() = cmdItems.size
 
     @JvmStatic
     fun reload() {
@@ -28,13 +59,15 @@ object Config {
                 cmdItems.add(createFromConfig(config.getConfigurationSection("items.$it")!!))
             }
         } catch (e: Exception) {
-            when (e::class){
+            when (e::class) {
                 IllegalArgumentException::class -> {
                     getServer().sendMessage(text("物品材料存在问题,重新加载失败"))
                 }
+
                 IndexOutOfBoundsException::class -> {
                     getServer().sendMessage(text("命名空间存在问题,重新加载失败"))
                 }
+
                 else -> {
                     getServer().sendMessage(text("未知错误,重新加载失败"))
                 }

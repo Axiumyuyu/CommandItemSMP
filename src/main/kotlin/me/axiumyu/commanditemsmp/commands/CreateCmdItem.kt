@@ -17,8 +17,7 @@ import me.axiumyu.commanditemsmp.Util.nameSpace
 import me.axiumyu.commanditemsmp.Util.propertyMap
 import me.axiumyu.commanditemsmp.Util.replaceColor
 import me.axiumyu.commanditemsmp.config.Config
-import me.axiumyu.commanditemsmp.config.Config.cmdItems
-import me.axiumyu.commanditemsmp.config.Config.config
+import me.axiumyu.commanditemsmp.config.Config.getSize
 import org.bukkit.Bukkit.getServer
 import org.bukkit.Material
 import org.bukkit.NamespacedKey.minecraft
@@ -36,6 +35,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
+import java.util.*
 
 
 object CreateCmdItem : CommandExecutor {
@@ -59,9 +59,13 @@ object CreateCmdItem : CommandExecutor {
         }
         val item = p0.inventory.itemInMainHand
         val key = if (p3.isEmpty()) {
-            (cmdItems.size + 1).toString()
+            (getSize() + 1).toString() + UUID.randomUUID()
         } else {
             p3[0]
+        }
+        if (Config.getCmdItem(key) != null) {
+            p0.sendMessage("id已经存在")
+            return false
         }
         serialize(item, key)
         p0.sendMessage("成功创建物品,id为 $key ! 请自行添加命令")
@@ -96,16 +100,21 @@ object CreateCmdItem : CommandExecutor {
         }
 
         item.lore(section.getStringList("lore").map { mm.deserializeOrNull(it.replaceColor()) })
+        val cmd = section.getStringList(propertyMap[CMD]!!)
+        val id = section.name
+        val consume = section.getBoolean(propertyMap[CONSUME]!!, true)
+        val cd = section.getInt(propertyMap[CD]!!, 0)
+        val needPerm = section.getBoolean(propertyMap[NEED_PERM]!!, false)
         item.editPersistentDataContainer {
             it.set(TAG, PersistentDataType.STRING, KEY)
-            it.set(CMD, PersistentDataType.LIST.strings(), section.getStringList(propertyMap[CMD]!!))
-            it.set(ID, PersistentDataType.STRING, section.name)
-            it.set(CONSUME, PersistentDataType.BOOLEAN, section.getBoolean(propertyMap[CONSUME]!!, true))
-            it.set(CD, PersistentDataType.INTEGER, section.getInt(propertyMap[CD]!!, 0))
-            it.set(NEED_PERM, PersistentDataType.BOOLEAN, section.getBoolean(propertyMap[NEED_PERM]!!, false))
+            it.set(CMD, PersistentDataType.LIST.strings(), cmd)
+            it.set(ID, PersistentDataType.STRING, id)
+            it.set(CONSUME, PersistentDataType.BOOLEAN, consume)
+            it.set(CD, PersistentDataType.INTEGER, cd)
+            it.set(NEED_PERM, PersistentDataType.BOOLEAN, needPerm)
         }
-        getServer().pluginManager.addPermission(Permission("commanditemsmp.use.${section.name}", PermissionDefault.OP))
-        return CmdItem(item)
+        getServer().pluginManager.addPermission(Permission("commanditemsmp.use.$id", PermissionDefault.TRUE))
+        return CmdItem(id, item, needPerm,cd,cmd, consume)
     }
 
     private fun getAttModFromConfig(section: ConfigurationSection): Map<Attribute, List<AttributeModifier>> {

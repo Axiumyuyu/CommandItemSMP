@@ -1,22 +1,22 @@
 package me.axiumyu.commanditemsmp
 
-import me.axiumyu.commanditemsmp.Util.CD
-import me.axiumyu.commanditemsmp.Util.CMD
-import me.axiumyu.commanditemsmp.Util.CONSUME
-import me.axiumyu.commanditemsmp.Util.ID
-import me.axiumyu.commanditemsmp.Util.NEED_PERM
 import me.axiumyu.commanditemsmp.Util.replacePapi
 import me.axiumyu.commanditemsmp.config.Config
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType.LIST
-import org.bukkit.persistence.PersistentDataType.STRING
 import org.bukkit.plugin.java.JavaPlugin.getPlugin
 
 data class CmdItem(
-    val item: ItemStack
+    val id : String,
+    val item: ItemStack,
+    var needPerm : Boolean,
+    var cooldown : Int,
+    var command : List<String>,
+    var consume : Boolean
 ) {
+
+    
     companion object {
         @JvmStatic
         fun Player.sendInfo(msg: String) {
@@ -27,14 +27,8 @@ data class CmdItem(
             }
         }
     }
-    val lastUse = mutableMapOf<Player, Long>()
 
-    val pdc = item.persistentDataContainer
-    val id = pdc.get(ID, STRING) ?: throw UnsupportedOperationException("物品不属于命令物品")
-    val needPerm = (pdc.get(NEED_PERM, STRING) ?: false) as Boolean
-    val cooldown = pdc.get(CD, STRING)?.toIntOrNull() ?: 0
-    val command = pdc.get(CMD, LIST.strings()) ?: listOf()
-    val consume = (pdc.get(CONSUME, STRING) ?: false) as Boolean
+    val lastUse = mutableMapOf<Player, Long>()
 
     fun canUse(pl: Player): Boolean {
         if (needPerm && !pl.hasPermission("commanditemsmp.use.$id")) {
