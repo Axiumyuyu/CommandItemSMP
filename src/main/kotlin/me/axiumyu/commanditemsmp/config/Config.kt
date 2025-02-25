@@ -2,6 +2,7 @@ package me.axiumyu.commanditemsmp.config
 
 import me.axiumyu.commanditemsmp.CmdItem
 import me.axiumyu.commanditemsmp.CommandItemSMP
+import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.config
 import me.axiumyu.commanditemsmp.commands.CreateCmdItem.createFromConfig
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit.getServer
@@ -9,7 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin.getPlugin
 
 object Config {
-    lateinit var config: FileConfiguration
+
 
     @JvmField
     var useMessage: Boolean = config.getBoolean("useMessage", true)

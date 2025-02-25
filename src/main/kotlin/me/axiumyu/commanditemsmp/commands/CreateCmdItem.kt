@@ -99,9 +99,15 @@ object CreateCmdItem : CommandExecutor {
             item.addEnchantments(enchs)
         }
         item.editMeta {
-            it.setRarity(ItemRarity.valueOf(section.getString("rarity") ?: "COMMON")) //throw IllegalArgumentException
-            it.setMaxStackSize(section.getInt("max-stack", 1))
-            it.setEnchantmentGlintOverride(section.getBoolean("glint", false))
+
+            section.getString("rarity")?.let{ r -> it.setRarity(ItemRarity.valueOf(r)) } //throw IllegalArgumentException
+            section.getInt("max-stack").let{ s->
+                if (s==0) return@let
+                it.setMaxStackSize(s)
+            }
+            section.getBoolean("glint").let{ g ->
+                it.setEnchantmentGlintOverride(g)
+            }
             it.isUnbreakable = section.getBoolean("unbreakable", false)
         }
 

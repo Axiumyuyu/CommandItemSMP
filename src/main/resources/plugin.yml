@@ -1,7 +1,12 @@
 name: CommandItemSMP
 version: '1.0.0'
-main: me.axiumyu.heartk.commanditemsmp.CommandItemSMP
+main: me.axiumyu.commanditemsmp.CommandItemSMP
 api-version: '1.21'
 libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.10'
   - 'com.google.guava:guava:33.4.0-jre'
+commands:
+  createitem:
+    permission: commanditemsmp.create
+  getitem:
+    permission: commanditemsmp.getitem

@@ -1,9 +1,9 @@
 package me.axiumyu.commanditemsmp
 
 import com.google.common.collect.Multimap
+import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.config
 import me.axiumyu.commanditemsmp.Util.ID
 import me.axiumyu.commanditemsmp.Util.propertyMap
-import me.axiumyu.commanditemsmp.config.Config.config
 import net.kyori.adventure.text.Component
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
@@ -37,11 +37,11 @@ object Serialize {
         path.set("material", item.type.name.out)
 
         val itemMeta = item.itemMeta ?: return
-        path.set("max-stack", itemMeta.maxStackSize)
-        path.set("rarity", itemMeta.rarity.name.out)
-        path.set("name", item.displayName())
+        if (itemMeta.hasRarity()) path.set("rarity", itemMeta.rarity.name.out)
+        if (itemMeta.hasMaxStackSize()) path.set("max-stack", itemMeta.maxStackSize)
+        if (itemMeta.hasDisplayName()) path.set("name", item.displayName())
+        if (itemMeta.hasEnchantmentGlintOverride()) path.set("glint", itemMeta.enchantmentGlintOverride)
         path.set("unbreakable", itemMeta.isUnbreakable)
-        path.set("glint", itemMeta.enchantmentGlintOverride)
 
         itemMeta.lore()?.forEach {
             path.set("lore", it)
