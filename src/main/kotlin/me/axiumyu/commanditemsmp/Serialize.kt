@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap
 import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.config
 import me.axiumyu.commanditemsmp.Util.ID
 import me.axiumyu.commanditemsmp.Util.propertyMap
+import me.axiumyu.commanditemsmp.config.Config
 import net.kyori.adventure.text.Component
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
@@ -68,5 +69,6 @@ object Serialize {
                 path.set(value, pdc.get(key, STRING)!!)
             }
         }
+        Config.save()
     }
 }

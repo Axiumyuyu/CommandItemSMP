@@ -21,6 +21,7 @@ class CommandItemSMP : JavaPlugin() {
         Companion.config = this.config
         saveDefaultConfig()
         mm = MiniMessage.miniMessage()
+        Config.reload()
         getCommand("getitem")?.setExecutor(GetCmdItem)
         getCommand("createitem")?.setExecutor(CreateCmdItem)
         server.pluginManager.registerEvents(UseCmdItem, this)

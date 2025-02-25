@@ -33,7 +33,7 @@ items:
       rarity: COMMON      #default: COMMON
       glint: false         #default: false
 
-      command:
+      commands:
         - "say Hello World"
         - "give %player_name% minecraft:stone 1"
       cooldown: 0           #default: 0

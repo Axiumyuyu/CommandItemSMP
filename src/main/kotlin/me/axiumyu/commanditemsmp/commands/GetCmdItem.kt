@@ -23,6 +23,7 @@ object GetCmdItem : CommandExecutor {
             p0.sendMessage("§c背包已满")
             return false
         }
+        p0.sendMessage("id:$id")
         val item = getCmdItem(id)
         if (item == null) {
             p0.sendMessage("§c未找到物品")

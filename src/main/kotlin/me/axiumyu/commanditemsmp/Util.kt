@@ -16,7 +16,7 @@ object Util {
     val TAG = axiumyuKey("tag")
 
     @JvmField
-    val CMD = axiumyuKey("command")
+    val CMD = axiumyuKey("commands")
 
     @JvmField
     val ID = axiumyuKey("id")
@@ -33,7 +33,7 @@ object Util {
     @JvmField
     val propertyMap: Map<NamespacedKey, String> = mapOf(
         ID to "id",
-        CMD to "command",
+        CMD to "commands",
         CD to "cooldown",
         NEED_PERM to "need_perm",
         CONSUME to "consume"

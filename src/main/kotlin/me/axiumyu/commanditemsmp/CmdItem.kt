@@ -15,7 +15,7 @@ data class CmdItem(
     var cooldown : Int,
     var command : List<String>,
     var consume : Boolean
-) {
+) : Cloneable {
 
 
     companion object {
@@ -55,5 +55,9 @@ data class CmdItem(
         if (consume) {
             pl.inventory.removeItem(item)
         }
+    }
+
+    public override fun clone(): CmdItem {
+        return CmdItem(id, item, needPerm, cooldown, command, consume)
     }
 }

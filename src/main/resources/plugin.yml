@@ -10,3 +10,6 @@ commands:
     permission: commanditemsmp.create
   getitem:
     permission: commanditemsmp.getitem
+permissions:
+  commanditemsmp.reload:
+    description: createitem reload

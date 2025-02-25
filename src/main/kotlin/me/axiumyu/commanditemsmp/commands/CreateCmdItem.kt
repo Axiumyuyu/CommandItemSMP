@@ -20,6 +20,7 @@ import me.axiumyu.commanditemsmp.Util.propertyMap
 import me.axiumyu.commanditemsmp.Util.replaceColor
 import me.axiumyu.commanditemsmp.config.Config
 import me.axiumyu.commanditemsmp.config.Config.getSize
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit.getServer
 import org.bukkit.Material
 import org.bukkit.NamespacedKey.minecraft
@@ -47,6 +48,12 @@ object CreateCmdItem : CommandExecutor {
         p2: String,
         p3: Array<out String>
     ): Boolean {
+        if (p3.isNotEmpty() && p3[0] == "reload") {
+            if (p0.hasPermission("commanditemsmp.reload")) {
+                Config.reload()
+                return true
+            }
+        }
         if (!p0.hasPermission("commanditemsmp.create")) {
             p0.sendMessage("你没有权限使用这个命令")
             return false
@@ -72,7 +79,7 @@ object CreateCmdItem : CommandExecutor {
         try {
             serialize(item, key)
         } catch (e: IllegalArgumentException) {
-            p0.sendMessage(e.message?:"序列化时发生错误")
+            p0.sendMessage(e.message ?: "序列化时发生错误")
         }
         p0.sendMessage("成功创建物品,id为 $key ! 请自行添加命令")
         Config.save()
@@ -80,6 +87,7 @@ object CreateCmdItem : CommandExecutor {
         return true
     }
 
+    @JvmStatic
     @Throws(IndexOutOfBoundsException::class, IllegalArgumentException::class)
     fun createFromConfig(section: ConfigurationSection): CmdItem {
         val material = Material.valueOf(section.getString("material") ?: "STONE") //throw IllegalArgumentException
@@ -96,16 +104,17 @@ object CreateCmdItem : CommandExecutor {
 
         section.getConfigurationSection("enchantments")?.let {
             val enchs = parseEnchantments(it)
-            item.addEnchantments(enchs)
+            item.addUnsafeEnchantments(enchs)
         }
         item.editMeta {
 
-            section.getString("rarity")?.let{ r -> it.setRarity(ItemRarity.valueOf(r)) } //throw IllegalArgumentException
-            section.getInt("max-stack").let{ s->
-                if (s==0) return@let
+            section.getString("rarity")
+                ?.let { r -> it.setRarity(ItemRarity.valueOf(r)) } //throw IllegalArgumentException
+            section.getInt("max-stack").let { s ->
+                if (s == 0) return@let
                 it.setMaxStackSize(s)
             }
-            section.getBoolean("glint").let{ g ->
+            section.getBoolean("glint").let { g ->
                 it.setEnchantmentGlintOverride(g)
             }
             it.isUnbreakable = section.getBoolean("unbreakable", false)
@@ -125,8 +134,12 @@ object CreateCmdItem : CommandExecutor {
             it.set(CD, PersistentDataType.INTEGER, cd)
             it.set(NEED_PERM, PersistentDataType.BOOLEAN, needPerm)
         }
-        getServer().pluginManager.addPermission(Permission("commanditemsmp.use.$id", PermissionDefault.TRUE))
-        return CmdItem(id, item, needPerm,cd,cmd, consume)
+        val pm = getServer().pluginManager
+        if (pm.getPermission("commanditemsmp.use.$id") == null) {
+            pm.addPermission(Permission("commanditemsmp.use.$id", PermissionDefault.TRUE))
+        }
+        getServer().sendMessage(text("created item, id: $id, cmd: $cmd, consume: $consume, needPerm: $needPerm"))
+        return CmdItem(id, item, needPerm, cd, cmd, consume)
     }
 
     private fun getAttModFromConfig(section: ConfigurationSection): Multimap<Attribute, AttributeModifier> {
