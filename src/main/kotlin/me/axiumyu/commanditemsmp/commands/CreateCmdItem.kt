@@ -51,8 +51,23 @@ object CreateCmdItem : CommandExecutor {
         if (p3.isNotEmpty() && p3[0] == "reload") {
             if (p0.hasPermission("commanditemsmp.reload")) {
                 Config.reload()
+                p0.sendMessage {
+                    text {
+                        "重载配置文件"
+                    }
+                }
                 return true
             }
+        }
+        if (p3.isNotEmpty() && p3[0] == "save") {
+            if (p0.hasPermission("commanditemsmp.save")) {
+                Config.save()
+                p0.sendMessage {
+                    text("保存配置文件")
+                }
+                return true
+            }
+
         }
         if (!p0.hasPermission("commanditemsmp.create")) {
             p0.sendMessage("你没有权限使用这个命令")

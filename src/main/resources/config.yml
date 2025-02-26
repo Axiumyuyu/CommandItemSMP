@@ -32,7 +32,6 @@ items:
       max-stack: 1           #default: 1
       rarity: COMMON      #default: COMMON
       glint: false         #default: false
-
       commands:
         - "say Hello World"
         - "give %player_name% minecraft:stone 1"

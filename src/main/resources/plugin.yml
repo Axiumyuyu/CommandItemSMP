@@ -13,3 +13,5 @@ commands:
 permissions:
   commanditemsmp.reload:
     description: createitem reload
+  commanditemsmp.save:
+    description: createitem save

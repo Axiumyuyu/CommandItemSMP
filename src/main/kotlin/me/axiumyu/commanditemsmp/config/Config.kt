@@ -38,6 +38,7 @@ object Config {
 
     @JvmStatic
     fun reload() {
+        getServer().sendMessage(text("正在重载配置文件"))
         getPlugin(CommandItemSMP::class.java).reloadConfig()
         useMessage = config.getBoolean("useMessage", true)
         drop = config.getBoolean("drop", true)
@@ -76,11 +77,19 @@ object Config {
             }.forEach {
                 pm.removePermission(it)
             }
+            getServer().sendMessage {
+                text("重载完成")
+            }
         }
     }
 
     @JvmStatic
     fun save() {
+        getServer().sendMessage(text("正在保存配置"))
         getPlugin(CommandItemSMP::class.java).saveConfig()
+        config.save("config.yml")
+        getServer().sendMessage {
+            text("保存完成")
+        }
     }
 }
