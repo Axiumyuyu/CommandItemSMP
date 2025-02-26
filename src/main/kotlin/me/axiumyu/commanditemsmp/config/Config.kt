@@ -3,7 +3,8 @@ package me.axiumyu.commanditemsmp.config
 import me.axiumyu.commanditemsmp.CmdItem
 import me.axiumyu.commanditemsmp.CommandItemSMP
 import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.config
-import me.axiumyu.commanditemsmp.commands.CreateCmdItem.createFromConfig
+import me.axiumyu.commanditemsmp.Deserialize.createFromConfig
+import me.axiumyu.commanditemsmp.Serialize
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit.getServer
 import org.bukkit.plugin.java.JavaPlugin.getPlugin
@@ -37,6 +38,11 @@ object Config {
     fun getSize() = cmdItems.size
 
     @JvmStatic
+    fun addItem(cmdItem: CmdItem) {
+        cmdItems.add(cmdItem)
+    }
+
+    @JvmStatic
     fun reload() {
         getServer().sendMessage(text("正在重载配置文件"))
         getPlugin(CommandItemSMP::class.java).reloadConfig()
@@ -45,9 +51,12 @@ object Config {
         strict = config.getBoolean("strict", true)
         val backup = mutableListOf<CmdItem>()
         backup.addAll(cmdItems)
+        getServer().sendMessage(text("old Item: --------------------"))
         backup.forEach {
             getServer().sendMessage(text(it.toString()))
+            getServer().sendMessage(text("-----------------"))
         }
+        getServer().sendMessage(text("Old Item End ----------------------"))
         try {
             cmdItems.clear()
             config.getConfigurationSection("items")?.getKeys(false)?.forEach {
@@ -86,8 +95,15 @@ object Config {
     @JvmStatic
     fun save() {
         getServer().sendMessage(text("正在保存配置"))
+        config.set("useMessage", useMessage)
+        config.set("drop", drop)
+        config.set("strict", strict)
+
+        cmdItems.forEach {
+            Serialize.serializeToConfig(it.item, it.id)
+        }
+
         getPlugin(CommandItemSMP::class.java).saveConfig()
-        config.save("config.yml")
         getServer().sendMessage {
             text("保存完成")
         }

@@ -9,7 +9,7 @@ drop: true
 strict: true
 
 items:
-  - test-item:
+  test-item:
       name: "Test Item"
       material: STONE   #https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
       lore:
@@ -20,7 +20,7 @@ items:
         - minecraft:unbreaking: 1
       attribute-modifiers:
         - axiumyu:test:
-            amount: 1.0
+            amount: 1.1
             operation: "ADD_SCALAR"     #ADD_NUMBER, ADD_SCALAR, MULTIPLY_SCALAR_1;
             slot: "HAND"             #  ANY, MAINHAND, OFFHAND, HAND, FEET, LEGS, CHEST, HEAD, ARMOR, BODY;
             to: "MAX_HEALTH"        # https://purpurmc.org/javadoc/org/bukkit/attribute/Attribute.html

@@ -10,17 +10,15 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class CommandItemSMP : JavaPlugin() {
     companion object {
-        lateinit var mm : MiniMessage
+        val mm by lazy { MiniMessage.miniMessage() }
 
         const val KEY = "commanditem"
 
-        lateinit var config: FileConfiguration
+        val config by lazy {getPlugin(CommandItemSMP::class.java).config }
     }
 
     override fun onEnable() {
-        Companion.config = this.config
         saveDefaultConfig()
-        mm = MiniMessage.miniMessage()
         Config.reload()
         getCommand("getitem")?.setExecutor(GetCmdItem)
         getCommand("createitem")?.setExecutor(CreateCmdItem)

@@ -11,6 +11,7 @@ import org.bukkit.Bukkit.getServer
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType.LIST
 import org.bukkit.persistence.PersistentDataType.STRING
 
 
@@ -30,7 +31,7 @@ object Serialize {
 
 
     @JvmStatic
-    fun serialize(item: ItemStack, id: String) {
+    fun serializeToConfig(item: ItemStack, id: String) {
         getServer().sendMessage(text("正在序列化物品, id: $id"))
 
         val path = "items.$id"
@@ -66,9 +67,11 @@ object Serialize {
             if (key == ID) return@forEach
             if (pdc.has(key, STRING)) {
                 path.set(value, pdc.get(key, STRING)!!)
+            }else if (pdc.has(key, LIST.strings())){
+                path.set(value,pdc.get(key, LIST.strings())!!)
             }
         }
+        Config.addItem(CmdItem(id, item, false, 0, listOf<String>(),false ))
         getServer().sendMessage(text("序列化完成"))
-        Config.save()
     }
 }
