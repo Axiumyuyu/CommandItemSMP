@@ -10,31 +10,31 @@ strict: true
 
 items:
   test-item:
-      name: "Test Item"
-      material: STONE   #https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-      lore:
-        - "This is a test item"
-        - "Click me!"
-      enchantments:
-        - minecraft:sharpness: 1
-        - minecraft:unbreaking: 1
-      attribute-modifiers:
-        - axiumyu:test:
-            amount: 1.1
-            operation: "ADD_SCALAR"     #ADD_NUMBER, ADD_SCALAR, MULTIPLY_SCALAR_1;
-            slot: "HAND"             #  ANY, MAINHAND, OFFHAND, HAND, FEET, LEGS, CHEST, HEAD, ARMOR, BODY;
-            to: "MAX_HEALTH"        # https://purpurmc.org/javadoc/org/bukkit/attribute/Attribute.html
-        - axiumyu:test2:
-            amount: 1.3
-            operation: "ADD_NUMBER"
-            slot: "FEET"
-            to: "ATTACK_SPEED"
-      max-stack: 1           #default: 1
-      rarity: COMMON      #default: COMMON
-      glint: false         #default: false
-      commands:
-        - "say Hello World"
-        - "give %player_name% minecraft:stone 1"
-      cooldown: 0           #default: 0
-      need-perm: false      #default: false
-      unbreakable: false     #default: false
+    name: "Test Item"
+    material: STONE   #https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+    lore:
+      - "This is a test item"
+      - "Click me!"
+    enchantments:
+      minecraft:sharpness: 1
+      minecraft:unbreaking: 1
+    attribute-modifiers:
+      - axiumyu:test:
+          amount: 1.1
+          operation: "ADD_SCALAR"     #ADD_NUMBER, ADD_SCALAR, MULTIPLY_SCALAR_1;
+          slot: "HAND"             #  ANY, MAINHAND, OFFHAND, HAND, FEET, LEGS, CHEST, HEAD, ARMOR, BODY;
+          to: "MAX_HEALTH"        # https://purpurmc.org/javadoc/org/bukkit/attribute/Attribute.html
+      - axiumyu:test2:
+          amount: 1.3
+          operation: "ADD_NUMBER"
+          slot: "FEET"
+          to: "ATTACK_SPEED"
+    max-stack: 1           #default: 1
+    rarity: COMMON      #default: COMMON
+    glint: false         #default: false
+    commands:
+      - "say Hello World"
+      - "give %player_name% minecraft:stone 1"
+    cooldown: 0           #default: 0
+    need-perm: false      #default: false
+    unbreakable: false     #default: false

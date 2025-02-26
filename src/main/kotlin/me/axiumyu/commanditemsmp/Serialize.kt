@@ -31,7 +31,7 @@ object Serialize {
 
 
     @JvmStatic
-    fun serializeToConfig(item: ItemStack, id: String) {
+    fun serializeToConfig(item: ItemStack, id: String, isNew : Boolean) {
         getServer().sendMessage(text("正在序列化物品, id: $id"))
 
         val path = "items.$id"
@@ -71,7 +71,7 @@ object Serialize {
                 path.set(value,pdc.get(key, LIST.strings())!!)
             }
         }
-        Config.addItem(CmdItem(id, item, false, 0, listOf<String>(),false ))
+        if (isNew) Config.addItem(CmdItem(id, item, false, 0, listOf<String>(),false ))
         getServer().sendMessage(text("序列化完成"))
     }
 }

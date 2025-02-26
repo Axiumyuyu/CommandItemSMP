@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap
 import io.papermc.paper.registry.RegistryKey.ATTRIBUTE
 import io.papermc.paper.registry.RegistryKey.ENCHANTMENT
 import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.KEY
+import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.config
 import me.axiumyu.commanditemsmp.CommandItemSMP.Companion.mm
 import me.axiumyu.commanditemsmp.Util.CD
 import me.axiumyu.commanditemsmp.Util.CMD
@@ -36,8 +37,8 @@ object Deserialize {
     @JvmStatic
     @Throws(IndexOutOfBoundsException::class, IllegalArgumentException::class)
     fun createFromConfig(section: ConfigurationSection): CmdItem {
-        getServer().sendMessage(text("section: ${section.name}\nmaterial: ${section.getString("material")}"))
-        val material = Material.valueOf(section.getString("material") ?: "STONE") //throw IllegalArgumentException
+        getServer().sendMessage(text("section: ${section.name}\nmaterial: ${config.getString("items.${section.name}.material")}"))
+        val material = Material.valueOf(config.getString("items.${section.name}.material") ?: "STONE") //throw IllegalArgumentException
         val item = ItemStack(material)
 
 

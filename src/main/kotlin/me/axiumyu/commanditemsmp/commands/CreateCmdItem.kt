@@ -61,7 +61,7 @@ object CreateCmdItem : CommandExecutor {
             return false
         }
         try {
-            serializeToConfig(item, key)
+            serializeToConfig(item, key, true)
         } catch (e: IllegalArgumentException) {
             p0.sendMessage(e.message ?: "序列化时发生错误")
         }

@@ -100,9 +100,8 @@ object Config {
         config.set("strict", strict)
 
         cmdItems.forEach {
-            Serialize.serializeToConfig(it.item, it.id)
+            Serialize.serializeToConfig(it.item, it.id, false)
         }
-
         getPlugin(CommandItemSMP::class.java).saveConfig()
         getServer().sendMessage {
             text("保存完成")
